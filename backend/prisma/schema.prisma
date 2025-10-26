@@ -1,0 +1,93 @@
+// Prisma Schema for Ocean-Sense Network
+// With TimescaleDB extensions for time-series data
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Buoy {
+  id          String   @id @default(uuid())
+  buoyId      String   @unique // On-chain buoy ID
+  ownerAddress String
+  metadataHash String
+  locationHash String
+  latitude    Float?
+  longitude   Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  readings    SensorReading[]
+}
+
+model SensorReading {
+  id          String   @id @default(uuid())
+  buoyId      String
+  
+  // Sensor data
+  temperature Float?
+  ph          Float?
+  salinity    Float?
+  latitude    Float
+  longitude   Float
+  
+  // Additional metrics
+  batteryLevel Int?
+  hydrocarbonPpm Float? // Para detección de derrames
+  
+  timestamp   DateTime @default(now())
+  
+  // Relations
+  buoy        Buoy     @relation(fields: [buoyId], references: [id])
+  
+  @@index([buoyId, timestamp])
+  @@index([timestamp])
+}
+
+model DataPackage {
+  id              String   @id @default(uuid())
+  packageId       String   @unique // On-chain package ID
+  sellerAddress   String
+  price           BigInt   // Price in wei or token units
+  dataHash        String   // IPFS hash
+  timeRangeStart  DateTime
+  timeRangeEnd    DateTime
+  areaCode        String
+  isActive        Boolean  @default(true)
+  purchaseCount   Int      @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Alert {
+  id          String   @id @default(uuid())
+  buoyId      String
+  alertType   String   // 'DERRIAME_PROBABLE', 'ACIDIFICACION', etc.
+  severity    Int      // 0-100
+  message     String
+  location    Json?    // { lat, lon }
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([buoyId, createdAt])
+}
+
+model RewardMetrics {
+  id              String   @id @default(uuid())
+  buoyId          String   @unique
+  uptimeSeconds   BigInt   @default(0)
+  qualityScore    Int      // 0-100
+  lastPing        DateTime?
+  accumulatedRewards BigInt @default(0)
+  
+  updatedAt       DateTime @updatedAt
+  
+  @@index([buoyId])
+}
+

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌊 Ocean-Sense Network | EthLima Hackathon</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats { display: flex; gap: 2rem; }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #00d4ff;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #00d4ff;
+        }
+
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+
+        @media (max-width: 1024px) { .grid { grid-template-columns: 1fr; } }
+
+        .buoy-item {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 8px;
+            border-left: 3px solid #00d4ff;
+        }
+
+        .buoy-item.alert {
+            border-left-color: #ff4757;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+        .alert-item {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 8px;
+        }
+
+        .prediction-item {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 255, 136, 0.1));
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 8px;
+        }
+
+        .probability {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00ff88;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo"><h1>🌊 Ocean-Sense Network</h1></div>
+        <div class="stats">
+            <div><div class="stat-value">8</div><div class="stat-label">Boyas Activas</div></div>
+            <div><div class="stat-value">768</div><div class="stat-label">Lecturas (24h)</div></div>
+            <div><div class="stat-value">1</div><div class="stat-label">Alertas</div></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h2 class="card-title">📍 Mapa de Boyas - Litoral Peruano</h2>
+            <div id="map"></div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2 class="card-title">Estado de Boyas</h2>
+                <div id="buoyList"></div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">🎣 Predicciones de Pesca (IA)</h2>
+                <div id="predictions"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">⚠️ Alertas</h2>
+            <div id="alerts"></div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🔗 Blockchain - Starknet</h2>
+            <p><strong>Red:</strong> Sepolia Testnet</p>
+            <p><strong>Contrato:</strong> 0x04f2...a3c9</p>
+            <p><strong>Boyas NFT:</strong> 8 registradas</p>
+            <p><strong>Rewards Pool:</strong> 50,000 OSN</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div>Ocean-Sense Network | Monitoreo Oceánico Descentralizado</div>
+        <div style="color: #00d4ff; font-weight: 600; margin-top: 0.5rem;">
+            Powered by Starknet + ESP32 + IA | EthLima Hackathon 2025
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="dashboard-data.js"></script>
+</body>
+</html>
+
