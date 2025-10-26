@@ -1,0 +1,230 @@
+[
+  {
+    "type": "impl",
+    "name": "DataMarketplaceImpl",
+    "interface_name": "ocean_sense_network::data_marketplace::data_marketplace::IDataMarketplace"
+  },
+  {
+    "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
+      {
+        "name": "low",
+        "type": "core::integer::u128"
+      },
+      {
+        "name": "high",
+        "type": "core::integer::u128"
+      }
+    ]
+  },
+  {
+    "type": "enum",
+    "name": "core::bool",
+    "variants": [
+      {
+        "name": "False",
+        "type": "()"
+      },
+      {
+        "name": "True",
+        "type": "()"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "ocean_sense_network::data_marketplace::data_marketplace::DataPackage",
+    "members": [
+      {
+        "name": "seller",
+        "type": "core::starknet::contract_address::ContractAddress"
+      },
+      {
+        "name": "price",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "data_hash",
+        "type": "core::felt252"
+      },
+      {
+        "name": "time_range_start",
+        "type": "core::integer::u64"
+      },
+      {
+        "name": "time_range_end",
+        "type": "core::integer::u64"
+      },
+      {
+        "name": "area_code",
+        "type": "core::felt252"
+      },
+      {
+        "name": "is_active",
+        "type": "core::bool"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "ocean_sense_network::data_marketplace::data_marketplace::IDataMarketplace",
+    "items": [
+      {
+        "type": "function",
+        "name": "list_data_package",
+        "inputs": [
+          {
+            "name": "price",
+            "type": "core::integer::u256"
+          },
+          {
+            "name": "data_hash",
+            "type": "core::felt252"
+          },
+          {
+            "name": "time_start",
+            "type": "core::integer::u64"
+          },
+          {
+            "name": "time_end",
+            "type": "core::integer::u64"
+          },
+          {
+            "name": "area",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "purchase_data_package",
+        "inputs": [
+          {
+            "name": "package_id",
+            "type": "core::integer::u256"
+          },
+          {
+            "name": "payment_token",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "has_access",
+        "inputs": [
+          {
+            "name": "buyer",
+            "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "package_id",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_package",
+        "inputs": [
+          {
+            "name": "package_id",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "ocean_sense_network::data_marketplace::data_marketplace::DataPackage"
+          }
+        ],
+        "state_mutability": "view"
+      }
+    ]
+  },
+  {
+    "type": "constructor",
+    "name": "constructor",
+    "inputs": []
+  },
+  {
+    "type": "event",
+    "name": "ocean_sense_network::data_marketplace::data_marketplace::PackageListed",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "package_id",
+        "type": "core::integer::u256",
+        "kind": "data"
+      },
+      {
+        "name": "seller",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "data"
+      },
+      {
+        "name": "price",
+        "type": "core::integer::u256",
+        "kind": "data"
+      },
+      {
+        "name": "area",
+        "type": "core::felt252",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ocean_sense_network::data_marketplace::data_marketplace::PackagePurchased",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "package_id",
+        "type": "core::integer::u256",
+        "kind": "data"
+      },
+      {
+        "name": "buyer",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "data"
+      },
+      {
+        "name": "price",
+        "type": "core::integer::u256",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ocean_sense_network::data_marketplace::data_marketplace::Event",
+    "kind": "enum",
+    "variants": [
+      {
+        "name": "PackageListed",
+        "type": "ocean_sense_network::data_marketplace::data_marketplace::PackageListed",
+        "kind": "nested"
+      },
+      {
+        "name": "PackagePurchased",
+        "type": "ocean_sense_network::data_marketplace::data_marketplace::PackagePurchased",
+        "kind": "nested"
+      }
+    ]
+  }
+]

@@ -1,0 +1,165 @@
+[
+  {
+    "type": "impl",
+    "name": "BuoyRegistryImpl",
+    "interface_name": "ocean_sense_network::buoy_registry::buoy_registry::IBuoyRegistry"
+  },
+  {
+    "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
+      {
+        "name": "low",
+        "type": "core::integer::u128"
+      },
+      {
+        "name": "high",
+        "type": "core::integer::u128"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "ocean_sense_network::buoy_registry::buoy_registry::IBuoyRegistry",
+    "items": [
+      {
+        "type": "function",
+        "name": "register_buoy",
+        "inputs": [
+          {
+            "name": "metadata_hash",
+            "type": "core::felt252"
+          },
+          {
+            "name": "location_hash",
+            "type": "core::felt252"
+          },
+          {
+            "name": "stake_amount",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "transfer_buoy",
+        "inputs": [
+          {
+            "name": "buoy_id",
+            "type": "core::integer::u256"
+          },
+          {
+            "name": "to",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "get_buoy_owner",
+        "inputs": [
+          {
+            "name": "buoy_id",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_total_buoys",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view"
+      }
+    ]
+  },
+  {
+    "type": "constructor",
+    "name": "constructor",
+    "inputs": []
+  },
+  {
+    "type": "event",
+    "name": "ocean_sense_network::buoy_registry::buoy_registry::BuoyRegistered",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "buoy_id",
+        "type": "core::integer::u256",
+        "kind": "data"
+      },
+      {
+        "name": "owner",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "data"
+      },
+      {
+        "name": "location_hash",
+        "type": "core::felt252",
+        "kind": "data"
+      },
+      {
+        "name": "timestamp",
+        "type": "core::integer::u64",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ocean_sense_network::buoy_registry::buoy_registry::BuoyTransferred",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "buoy_id",
+        "type": "core::integer::u256",
+        "kind": "data"
+      },
+      {
+        "name": "from",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "data"
+      },
+      {
+        "name": "to",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ocean_sense_network::buoy_registry::buoy_registry::Event",
+    "kind": "enum",
+    "variants": [
+      {
+        "name": "BuoyRegistered",
+        "type": "ocean_sense_network::buoy_registry::buoy_registry::BuoyRegistered",
+        "kind": "nested"
+      },
+      {
+        "name": "BuoyTransferred",
+        "type": "ocean_sense_network::buoy_registry::buoy_registry::BuoyTransferred",
+        "kind": "nested"
+      }
+    ]
+  }
+]

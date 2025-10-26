@@ -1,0 +1,196 @@
+[
+  {
+    "type": "impl",
+    "name": "BuoySimpleImpl",
+    "interface_name": "ocean_sense_network::buoy_simple::buoy_simple::IBuoySimple"
+  },
+  {
+    "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
+      {
+        "name": "low",
+        "type": "core::integer::u128"
+      },
+      {
+        "name": "high",
+        "type": "core::integer::u128"
+      }
+    ]
+  },
+  {
+    "type": "enum",
+    "name": "core::bool",
+    "variants": [
+      {
+        "name": "False",
+        "type": "()"
+      },
+      {
+        "name": "True",
+        "type": "()"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "ocean_sense_network::buoy_simple::buoy_simple::BuoyInfo",
+    "members": [
+      {
+        "name": "owner",
+        "type": "core::starknet::contract_address::ContractAddress"
+      },
+      {
+        "name": "latitude",
+        "type": "core::felt252"
+      },
+      {
+        "name": "longitude",
+        "type": "core::felt252"
+      },
+      {
+        "name": "is_active",
+        "type": "core::bool"
+      },
+      {
+        "name": "total_readings",
+        "type": "core::integer::u32"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "ocean_sense_network::buoy_simple::buoy_simple::IBuoySimple",
+    "items": [
+      {
+        "type": "function",
+        "name": "register_buoy",
+        "inputs": [
+          {
+            "name": "buoy_id",
+            "type": "core::integer::u256"
+          },
+          {
+            "name": "lat",
+            "type": "core::felt252"
+          },
+          {
+            "name": "lon",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "submit_data",
+        "inputs": [
+          {
+            "name": "buoy_id",
+            "type": "core::integer::u256"
+          },
+          {
+            "name": "timestamp",
+            "type": "core::integer::u64"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "get_buoy_info",
+        "inputs": [
+          {
+            "name": "buoy_id",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "ocean_sense_network::buoy_simple::buoy_simple::BuoyInfo"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_total_buoys",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view"
+      }
+    ]
+  },
+  {
+    "type": "constructor",
+    "name": "constructor",
+    "inputs": []
+  },
+  {
+    "type": "event",
+    "name": "ocean_sense_network::buoy_simple::buoy_simple::BuoyRegistered",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "buoy_id",
+        "type": "core::integer::u256",
+        "kind": "data"
+      },
+      {
+        "name": "owner",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "data"
+      },
+      {
+        "name": "latitude",
+        "type": "core::felt252",
+        "kind": "data"
+      },
+      {
+        "name": "longitude",
+        "type": "core::felt252",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ocean_sense_network::buoy_simple::buoy_simple::DataSubmitted",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "buoy_id",
+        "type": "core::integer::u256",
+        "kind": "data"
+      },
+      {
+        "name": "timestamp",
+        "type": "core::integer::u64",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ocean_sense_network::buoy_simple::buoy_simple::Event",
+    "kind": "enum",
+    "variants": [
+      {
+        "name": "BuoyRegistered",
+        "type": "ocean_sense_network::buoy_simple::buoy_simple::BuoyRegistered",
+        "kind": "nested"
+      },
+      {
+        "name": "DataSubmitted",
+        "type": "ocean_sense_network::buoy_simple::buoy_simple::DataSubmitted",
+        "kind": "nested"
+      }
+    ]
+  }
+]

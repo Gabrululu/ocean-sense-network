@@ -1,0 +1,196 @@
+[
+  {
+    "type": "impl",
+    "name": "RewardDistributorImpl",
+    "interface_name": "ocean_sense_network::reward_distributor::reward_distributor::IRewardDistributor"
+  },
+  {
+    "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
+      {
+        "name": "low",
+        "type": "core::integer::u128"
+      },
+      {
+        "name": "high",
+        "type": "core::integer::u128"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "ocean_sense_network::reward_distributor::reward_distributor::IRewardDistributor",
+    "items": [
+      {
+        "type": "function",
+        "name": "update_buoy_metrics",
+        "inputs": [
+          {
+            "name": "buoy_id",
+            "type": "core::integer::u256"
+          },
+          {
+            "name": "uptime_seconds",
+            "type": "core::integer::u64"
+          },
+          {
+            "name": "quality_score",
+            "type": "core::integer::u8"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "claim_rewards",
+        "inputs": [
+          {
+            "name": "buoy_id",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "get_accumulated_rewards",
+        "inputs": [
+          {
+            "name": "buoy_id",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view"
+      }
+    ]
+  },
+  {
+    "type": "constructor",
+    "name": "constructor",
+    "inputs": [
+      {
+        "name": "buoy_registry",
+        "type": "core::starknet::contract_address::ContractAddress"
+      },
+      {
+        "name": "reward_token",
+        "type": "core::starknet::contract_address::ContractAddress"
+      },
+      {
+        "name": "oracle_address",
+        "type": "core::starknet::contract_address::ContractAddress"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ocean_sense_network::reward_distributor::reward_distributor::RewardCalculated",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "buoy_id",
+        "type": "core::integer::u256",
+        "kind": "data"
+      },
+      {
+        "name": "amount",
+        "type": "core::integer::u256",
+        "kind": "data"
+      },
+      {
+        "name": "uptime_score",
+        "type": "core::integer::u8",
+        "kind": "data"
+      },
+      {
+        "name": "quality_score",
+        "type": "core::integer::u8",
+        "kind": "data"
+      },
+      {
+        "name": "timestamp",
+        "type": "core::integer::u64",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ocean_sense_network::reward_distributor::reward_distributor::RewardClaimed",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "buoy_id",
+        "type": "core::integer::u256",
+        "kind": "data"
+      },
+      {
+        "name": "operator",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "data"
+      },
+      {
+        "name": "amount",
+        "type": "core::integer::u256",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ocean_sense_network::reward_distributor::reward_distributor::MetricsUpdated",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "buoy_id",
+        "type": "core::integer::u256",
+        "kind": "data"
+      },
+      {
+        "name": "uptime_seconds",
+        "type": "core::integer::u64",
+        "kind": "data"
+      },
+      {
+        "name": "quality_score",
+        "type": "core::integer::u8",
+        "kind": "data"
+      },
+      {
+        "name": "new_reward",
+        "type": "core::integer::u256",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ocean_sense_network::reward_distributor::reward_distributor::Event",
+    "kind": "enum",
+    "variants": [
+      {
+        "name": "RewardCalculated",
+        "type": "ocean_sense_network::reward_distributor::reward_distributor::RewardCalculated",
+        "kind": "nested"
+      },
+      {
+        "name": "RewardClaimed",
+        "type": "ocean_sense_network::reward_distributor::reward_distributor::RewardClaimed",
+        "kind": "nested"
+      },
+      {
+        "name": "MetricsUpdated",
+        "type": "ocean_sense_network::reward_distributor::reward_distributor::MetricsUpdated",
+        "kind": "nested"
+      }
+    ]
+  }
+]

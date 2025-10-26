@@ -1,0 +1,22 @@
+{
+  "network": "sepolia",
+  "rpcUrl": "https://starknet-sepolia.public.blastapi.io/rpc/v0_8",
+  "contracts": {
+    "buoyRegistry": {
+      "address": "0x0740a57bf263a3c28d472563208dde1238555cf488744a37df5a6386039ee6a6",
+      "abi": "/abis/buoy_registry_buoy_registry.compiled_abi.json"
+    },
+    "rewardDistributor": {
+      "address": "0x02ba782ccbea584c3248cdba31b63ebaa3060c1ea56be928eee5b5bdfdde226c",
+      "abi": "/abis/reward_distributor_reward_distributor.compiled_abi.json"
+    },
+    "dataMarketplace": {
+      "address": "0x07096644655f0c0fd28c92e9abc1e156586227ccb1e36cfdf32a6f1a9412ac60",
+      "abi": "/abis/data_marketplace_data_marketplace.compiled_abi.json"
+    },
+    "buoySimple": {
+      "address": "0x0418b6a6a46892019a2f9b3868a606d93f3f2f936aaabdf045a92c95dd5f6042",
+      "abi": "/abis/buoy_simple_buoy_simple.compiled_abi.json"
+    }
+  }
+}

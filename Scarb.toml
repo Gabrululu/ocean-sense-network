@@ -2,14 +2,13 @@
 name = "ocean_sense_network"
 version = "1.0.0"
 edition = "2023_11"
+license = "MIT"
 
 [dependencies]
 starknet = ">=2.6.3"
 
-# 1. AÑADE ESTA SECCIÓN
 [lib]
 
-# 2. DEJA ESTAS SECCIONES COMO ESTABAN, PERO
 [[target.starknet-contract]]
 name = "buoy_registry"
 sierra = true
@@ -29,3 +28,5 @@ casm = true
 name = "buoy_simple"
 sierra = true
 casm = true
+
+[profile.release]
