@@ -1,6 +1,6 @@
 // Archivo: src/lib.cairo
 
-mod buoy_registry;
-mod reward_distributor;
-mod data_marketplace;
-mod buoy_simple;
+pub mod buoy_registry;
+pub mod reward_distributor;
+pub mod data_marketplace;
+pub mod buoy_simple;

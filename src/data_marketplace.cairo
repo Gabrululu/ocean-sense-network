@@ -1,70 +1,76 @@
-// DataMarketplace - Marketplace de datos agregados
-// Ocean-Sense Network
-
-use starknet::ContractAddress;
-use starknet::get_caller_address;
-use starknet::storage::LegacyMap;
-
-#[starknet::interface]
-trait IDataMarketplace<TContractState> {
-    fn list_data_package(
-        ref self: TContractState,
-        price: u256,
-        data_hash: felt252,
-        time_start: u64,
-        time_end: u64,
-        area: felt252
-    ) -> u256;
-    
-    fn purchase_data_package(
-        ref self: TContractState,
-        package_id: u256
-    );
-    
-    fn has_access(
-        self: @TContractState,
-        buyer: ContractAddress,
-        package_id: u256
-    ) -> bool;
-    
-    fn get_package(
-        self: @TContractState,
-        package_id: u256
-    ) -> DataPackage;
-}
-
+// Archivo: src/data_marketplace.cairo
 #[starknet::contract]
-mod DataMarketplace {
-    use starknet::ContractAddress;
-    use starknet::get_caller_address;
-    
-    #[derive(Serde, starknet::Store)]
+mod data_marketplace {    
+    use starknet::{ContractAddress, get_caller_address};
+    use starknet::storage::Map;
+    use core::serde::Serde;
+
+    #[derive(Serde, starknet::Store, Drop, Copy)] 
     struct DataPackage {
         seller: ContractAddress,
         price: u256,
-        data_hash: felt252,  // IPFS hash del dataset
+        data_hash: felt252, 
         time_range_start: u64,
         time_range_end: u64,
-        area_code: felt252,  // Zona geográfica (e.g., "CALLAO_NORTH")
+        area_code: felt252, 
         is_active: bool,
     }
-    
+
+    #[starknet::interface]
+    trait IERC20<TContractState> {
+        fn transfer_from(
+            ref self: TContractState,
+            sender: ContractAddress,
+            recipient: ContractAddress,
+            amount: u256
+        ) -> bool;
+    }
+
+    #[starknet::interface]
+    trait IDataMarketplace<TContractState> {
+        fn list_data_package(
+            ref self: TContractState,
+            price: u256,
+            data_hash: felt252,
+            time_start: u64,
+            time_end: u64,
+            area: felt252
+        ) -> u256;
+        
+        fn purchase_data_package(
+            ref self: TContractState,
+            package_id: u256,
+            payment_token: ContractAddress
+        );
+        
+        fn has_access(
+            self: @TContractState,
+            buyer: ContractAddress,
+            package_id: u256
+        ) -> bool;
+        
+        fn get_package(
+            self: @TContractState,
+            package_id: u256
+        ) -> DataPackage;
+    }
+
     #[storage]
     struct Storage {
-        data_packages: LegacyMap<u256, DataPackage>,
+        data_packages: Map<u256, DataPackage>,
         package_count: u256,
-        purchases: LegacyMap<(ContractAddress, u256), bool>, // (buyer, package_id) -> has_access
-        purchases_count: LegacyMap<u256, u256>, // Cuántas veces se ha comprado
+        purchases: Map<(ContractAddress, u256), bool>,
+        purchases_count: Map<u256, u256>,
     }
 
     #[event]
-    #[derive(starknet::Event)]
+    #[derive(Drop, starknet::Event)]
     enum Event {
         PackageListed: PackageListed,
         PackagePurchased: PackagePurchased,
     }
 
-    #[derive(starknet::Event)]
+    #[derive(Drop, starknet::Event)] 
     struct PackageListed {
         package_id: u256,
         seller: ContractAddress,
@@ -72,7 +78,7 @@ mod DataMarketplace {
         area: felt252,
     }
 
-    #[derive(starknet::Event)]
+    #[derive(Drop, starknet::Event)]
     struct PackagePurchased {
         package_id: u256,
         buyer: ContractAddress,
@@ -86,85 +92,81 @@ mod DataMarketplace {
         self.package_count.write(0_u256);
     }
 
-    #[external(v0)]
-    fn list_data_package(
-        ref self: ContractState,
-        price: u256,
-        data_hash: felt252,
-        time_start: u64,
-        time_end: u64,
-        area: felt252
-    ) -> u256 {
-        let caller = get_caller_address();
-    let package_id = self.package_count.read() + 1_u256;
-        
-        let package = DataPackage {
-            seller: caller,
-            price,
-            data_hash,
-            time_range_start: time_start,
-            time_range_end: time_end,
-            area_code: area,
-            is_active: true,
-        };
-        
-    self.data_packages.write(package_id, package);
-    self.package_count.write(package_id);
-        
-        let area_copy = area;
-        self.emit(PackageListed {
-            package_id,
-            seller: caller,
-            price,
-            area: area_copy,
-        });
-        
-        package_id
-    }
+    #[abi(embed_v0)] 
+    impl DataMarketplaceImpl of IDataMarketplace<ContractState> {
+        fn list_data_package(
+            ref self: ContractState,
+            price: u256,
+            data_hash: felt252,
+            time_start: u64,
+            time_end: u64,
+            area: felt252
+        ) -> u256 {
+            let caller = get_caller_address();
+            let package_id = self.package_count.read() + 1_u256;
+            
+            let package = DataPackage {
+                seller: caller,
+                price,
+                data_hash,
+                time_range_start: time_start,
+                time_range_end: time_end,
+                area_code: area,
+                is_active: true,
+            };
+            
+            self.data_packages.write(package_id, package);
+            self.package_count.write(package_id);
+            
+            let area_copy = area;
+            self.emit(Event::PackageListed(PackageListed {
+                package_id,
+                seller: caller,
+                price,
+                area: area_copy,
+            }));
+            
+            package_id
+        }
 
-    #[external(v0)]
-    fn purchase_data_package(
-        ref self: ContractState,
-        package_id: u256
-    ) {
-        let caller = get_caller_address();
-    let package = self.data_packages.read(package_id);
-        
-        assert(package.is_active, 'Package not active');
-        
-        // Transfer payment to seller
-        // TODO: Implementar transfer de tokens ERC20
-        // IERC20Dispatcher { contract_address: payment_token }.transfer_from(caller, package.seller, package.price);
-        
-        // Dar acceso al comprador
-    self.purchases.write((caller, package_id), true);
+        fn purchase_data_package(
+            ref self: ContractState,
+            package_id: u256,
+            payment_token: ContractAddress
+        ) {
+            let caller = get_caller_address();
+            let package = self.data_packages.read(package_id);
+            
+            assert(package.is_active, 'Package not active');
+            
+            // let token_dispatcher = IERC20Dispatcher { contract_address: payment_token };
+            // token_dispatcher.transfer_from(caller, package.seller, package.price);
+            
+            self.purchases.write((caller, package_id), true);
 
-    // Incrementar contador de compras
-    let current_count = self.purchases_count.read(package_id);
-    self.purchases_count.write(package_id, current_count + 1_u256);
+            let current_count = self.purchases_count.read(package_id);
+            self.purchases_count.write(package_id, current_count + 1_u256);
+            
+            self.emit(Event::PackagePurchased(PackagePurchased {
+                package_id,
+                buyer: caller,
+                price: package.price,
+            }));
+        }
         
-        self.emit(PackagePurchased {
-            package_id,
-            buyer: caller,
-            price: package.price,
-        });
-    }
-    
-    #[external(v0)]
-    fn has_access(
-        self: @ContractState,
-        buyer: ContractAddress,
-        package_id: u256
-    ) -> bool {
-    self.purchases.read((buyer, package_id))
-    }
-    
-    #[external(v0)]
-    fn get_package(
-        self: @ContractState,
-        package_id: u256
-    ) -> DataPackage {
-    self.data_packages.read(package_id)
+        fn has_access(
+            self: @ContractState,
+            buyer: ContractAddress,
+            package_id: u256
+        ) -> bool {
+            self.purchases.read((buyer, package_id))
+        }
+        
+        fn get_package(
+            self: @ContractState,
+            package_id: u256
+        ) -> DataPackage {
+            self.data_packages.read(package_id)
+        }
     }
 }
-
