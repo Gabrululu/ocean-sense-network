@@ -3,12 +3,13 @@
 
 use starknet::ContractAddress;
 use starknet::get_caller_address;
+use starknet::storage::LegacyMap;
 
 #[starknet::interface]
 trait IDataMarketplace<TContractState> {
     fn list_data_package(
         ref self: TContractState,
-        price: felt252,
+        price: u256,
         data_hash: felt252,
         time_start: u64,
         time_end: u64,
@@ -37,10 +38,10 @@ mod DataMarketplace {
     use starknet::ContractAddress;
     use starknet::get_caller_address;
     
-    #[derive(Drop, Serde, starknet::Store)]
+    #[derive(Serde, starknet::Store)]
     struct DataPackage {
         seller: ContractAddress,
-        price: felt252,
+        price: u256,
         data_hash: felt252,  // IPFS hash del dataset
         time_range_start: u64,
         time_range_end: u64,
@@ -50,52 +51,52 @@ mod DataMarketplace {
     
     #[storage]
     struct Storage {
-        data_packages: Map<u256, DataPackage>,
+        data_packages: LegacyMap<u256, DataPackage>,
         package_count: u256,
-        purchases: Map<(ContractAddress, u256), bool>, // (buyer, package_id) -> has_access
-        purchases_count: Map<u256, u256>, // Cuántas veces se ha comprado
+        purchases: LegacyMap<(ContractAddress, u256), bool>, // (buyer, package_id) -> has_access
+        purchases_count: LegacyMap<u256, u256>, // Cuántas veces se ha comprado
     }
 
     #[event]
-    #[derive(Drop, starknet::Event)]
+    #[derive(starknet::Event)]
     enum Event {
         PackageListed: PackageListed,
         PackagePurchased: PackagePurchased,
     }
 
-    #[derive(Drop, starknet::Event)]
+    #[derive(starknet::Event)]
     struct PackageListed {
         package_id: u256,
         seller: ContractAddress,
-        price: felt252,
+        price: u256,
         area: felt252,
     }
 
-    #[derive(Drop, starknet::Event)]
+    #[derive(starknet::Event)]
     struct PackagePurchased {
         package_id: u256,
         buyer: ContractAddress,
-        price: felt252,
+        price: u256,
     }
 
     #[constructor]
     fn constructor(
         ref self: ContractState
     ) {
-        self.storage.package_count.write(0);
+        self.package_count.write(0_u256);
     }
 
     #[external(v0)]
     fn list_data_package(
         ref self: ContractState,
-        price: felt252,
+        price: u256,
         data_hash: felt252,
         time_start: u64,
         time_end: u64,
         area: felt252
     ) -> u256 {
         let caller = get_caller_address();
-        let package_id = self.storage.package_count.read() + 1;
+    let package_id = self.package_count.read() + 1_u256;
         
         let package = DataPackage {
             seller: caller,
@@ -107,8 +108,8 @@ mod DataMarketplace {
             is_active: true,
         };
         
-        self.storage.data_packages.write(package_id, package);
-        self.storage.package_count.write(package_id);
+    self.data_packages.write(package_id, package);
+    self.package_count.write(package_id);
         
         let area_copy = area;
         self.emit(PackageListed {
@@ -127,7 +128,7 @@ mod DataMarketplace {
         package_id: u256
     ) {
         let caller = get_caller_address();
-        let package = self.storage.data_packages.read(package_id);
+    let package = self.data_packages.read(package_id);
         
         assert(package.is_active, 'Package not active');
         
@@ -136,11 +137,11 @@ mod DataMarketplace {
         // IERC20Dispatcher { contract_address: payment_token }.transfer_from(caller, package.seller, package.price);
         
         // Dar acceso al comprador
-        self.storage.purchases.write((caller, package_id), true);
-        
-        // Incrementar contador de compras
-        let current_count = self.storage.purchases_count.read(package_id);
-        self.storage.purchases_count.write(package_id, current_count + 1);
+    self.purchases.write((caller, package_id), true);
+
+    // Incrementar contador de compras
+    let current_count = self.purchases_count.read(package_id);
+    self.purchases_count.write(package_id, current_count + 1_u256);
         
         self.emit(PackagePurchased {
             package_id,
@@ -155,7 +156,7 @@ mod DataMarketplace {
         buyer: ContractAddress,
         package_id: u256
     ) -> bool {
-        self.storage.purchases.read((buyer, package_id))
+    self.purchases.read((buyer, package_id))
     }
     
     #[external(v0)]
@@ -163,7 +164,7 @@ mod DataMarketplace {
         self: @ContractState,
         package_id: u256
     ) -> DataPackage {
-        self.storage.data_packages.read(package_id)
+    self.data_packages.read(package_id)
     }
 }
 

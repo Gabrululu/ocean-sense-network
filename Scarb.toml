@@ -1,0 +1,31 @@
+[package]
+name = "ocean_sense_network"
+version = "1.0.0"
+edition = "2023_11"
+
+[dependencies]
+starknet = ">=2.6.3"
+
+# 1. AÑADE ESTA SECCIÓN
+[lib]
+
+# 2. DEJA ESTAS SECCIONES COMO ESTABAN, PERO
+[[target.starknet-contract]]
+name = "buoy_registry"
+sierra = true
+casm = true
+
+[[target.starknet-contract]]
+name = "reward_distributor"
+sierra = true
+casm = true
+
+[[target.starknet-contract]]
+name = "data_marketplace"
+sierra = true
+casm = true
+
+[[target.starknet-contract]]
+name = "buoy_simple"
+sierra = true
+casm = true

@@ -1,0 +1,16 @@
+# Archivo: snfoundry.toml
+
+[sncast.default]
+# Este será el perfil por defecto para todos los comandos
+url = "https://starknet-sepolia.public.blastapi.io/rpc/v0_8"
+account = "my_sepolia_account"
+
+[sncast.accounts.my_sepolia_account]
+# Pega la dirección 0x... que te dio el comando 'account create'
+address = "0x026961fd08006eaa6f91ab21e1a91ac59238b29934a7c5dfcba585f5957a1d2c"
+
+# Ruta al keystore (el archivo con tu clave privada)
+keystore = "./my_sepolia_account.keystore.json"
+
+# Ruta al descriptor (el archivo con los datos de la cuenta)
+deployment = "./my_sepolia_account.json"
