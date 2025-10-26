@@ -3,10 +3,15 @@ import path from 'path';
 import { RpcProvider, Contract } from 'starknet';
 
 async function main() {
-  const cfgRaw = await fs.readFile(path.resolve('frontend/config/contracts.json'), 'utf8');
+  const cfgPath = path.resolve('frontend', 'config', 'contracts.json');
+  const cfgRaw = await fs.readFile(cfgPath, 'utf8');
   const cfg = JSON.parse(cfgRaw);
 
-  const buoyEntry = cfg.contracts.buoyRegistry;
+  const buoyEntry = cfg.contracts && cfg.contracts.buoyRegistry;
+  if (!buoyEntry) {
+    throw new Error('buoyRegistry entry not found in config');
+  }
+
   const abiPath = path.resolve('frontend', buoyEntry.abi.replace(/^[\/]/, ''));
   const abiRaw = await fs.readFile(abiPath, 'utf8');
   const abiJson = JSON.parse(abiRaw);
